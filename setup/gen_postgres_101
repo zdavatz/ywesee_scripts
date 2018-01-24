@@ -1,0 +1,32 @@
+#!/bin/bash -v
+set -e
+set -x
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/x86_64-pc-linux-gnu/gcc-bin/4.9.3
+export PG_VERSION=10_1
+export INSTALL_DIR=/usr/local/pg-${PG_VERSION}
+export suffix="-${PG_VERSION//./}"
+export TIMESTAMP=`date +%Y_%m_%d_%H_%M_%S`
+
+cd /usr/local/src
+
+sudo rm -rfv ruby-${PG_VERSION}
+sudo rm -rfv ${INSTALL_DIR}
+
+if [ ! -d postgresql ]
+then
+  git clone git://git.postgresql.org/git/postgresql.git
+fi
+
+cd /usr/local/src/postgresql
+git checkout master
+# git branch -D ${PG_VERSION} 
+git checkout REL_${PG_VERSION} -b ${PG_VERSION}_${TIMESTAMP}
+mkdir -p cd /usr/local/src/postgresql/build_dir
+cd /usr/local/src/postgresql/build_dir
+../configure --prefix=${INSTALL_DIR}
+make -j 8
+sudo make install
+export LD_LIBRARY_PATH=${INSTALL_DIR}/lib
+export PATH=${INSTALL_DIR}/bin:$PATH
+which psql
+psql --version

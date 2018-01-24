@@ -1,0 +1,10 @@
+#!/bin/bash -v
+cd mod_ruby
+make  clean
+/usr/local/bin/ruby186 ./configure.rb \
+  --with-apxs=/usr/sbin/apxs \
+  --with-apr-includes=/usr/include/apr-1 \
+  --prefix=/usr/local
+  --exec-prefix=/usr/local
+make
+cp mod_ruby.so /usr/lib64/apache2/modules/mod_ruby186.so

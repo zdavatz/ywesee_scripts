@@ -1,0 +1,29 @@
+#!/bin/bash -v
+set -e
+set -x
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/x86_64-pc-linux-gnu/gcc-bin/4.9.3
+cd /usr/local/src
+export RUBY_VERSION=2.5.0
+export INSTALL_DIR=/usr/local/ruby-${RUBY_VERSION}
+export suffix="-${RUBY_VERSION//./}"
+
+if [ ! -f ruby-${RUBY_VERSION}.tar.bz2 ]
+then
+  wget https://ftp.ruby-lang.org/pub/ruby/ruby-${RUBY_VERSION}.tar.bz2
+fi
+sudo rm -rf ruby-${RUBY_VERSION}
+sudo rm -rf ${INSTALL_DIR}
+tar -jxf ruby-${RUBY_VERSION}.tar.bz2
+cd ruby-${RUBY_VERSION}
+autoconf
+./configure --prefix=${INSTALL_DIR} --program-suffix=${suffix} --libdir=${INSTALL_DIR}/lib --disable-install-doc 2>&1 | tee configure.log
+make -j12
+sudo make install
+sudo rm -f /usr/local/bin/*${suffix}
+sudo ln -s ${INSTALL_DIR}/bin/*${suffix} /usr/local/bin
+sudo ${INSTALL_DIR}/bin/gem${suffix} install bundler
+sudo ln -s  ${INSTALL_DIR}/bin/bundle  /usr/local/bin/bundle${suffix}
+
+# now you should be able to call bundle-250 exec ruby-250 -v in a directory containing a Gemfile
+
+

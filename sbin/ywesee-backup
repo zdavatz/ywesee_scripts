@@ -1,0 +1,18 @@
+#!/bin/sh
+
+/usr/local/sbin/pg_backup.sh bv
+#/usr/local/sbin/mysql_backup
+
+## delete db-backups older than 5 days
+for file in $(find /var/backup/thinpower/db/postgresql -daystart -ctime +5)
+do
+	rm -rf $file
+done
+
+rsync -a --delete /service zdavatz@192.168.0.37:/var/backup/thin
+rsync -a --delete /etc/apache2/vhosts.d zdavatz@192.168.0.37:/var/backup/thin
+rsync -a --delete /etc/ydim zdavatz@192.168.0.37:/var/backup/thin
+rsync -a --delete /etc/ydpm zdavatz@192.168.0.37:/var/backup/thin
+rsync -a --delete /var/www zdavatz@192.168.0.37:/var/backup/thin
+rsync -a --delete /home/ywesee/git zdavatz@192.168.0.37:/var/backup/thin
+rsync -a --delete /usr/local/sbin zdavatz@192.168.0.37:/var/backup/thin
